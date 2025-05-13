@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materias - Planify</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background-color: #4FD1C5;
+            color: white;
+            text-align: center;
+            padding: 20px 15px 10px;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .header .menu-dots {
+            position: absolute;
+            right: 15px;
+            top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 15px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .action-button {
+            background-color: #4FD1C5;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .action-button:hover {
+            background-color: #38B2AC;
+        }
+        
+        .subject-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .subject-info {
+            flex: 1;
+        }
+        
+        .subject-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .subject-professor {
+            color: #4A5568;
+            font-size: 14px;
+            margin-top: 2px;
+        }
+        
+        .subject-stats {
+            display: flex;
+            margin-top: 5px;
+        }
+        
+        .subject-stat {
+            font-size: 12px;
+            color: #718096;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .subject-stat .icon {
+            margin-right: 4px;
+            font-size: 14px;
+        }
+        
+        .subject-credits {
+            background-color: #4FD1C5;
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .subject-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+        
+        .subject-action-btn {
+            background: none;
+            border: none;
+            color: #4A5568;
+            font-size: 13px;
+            padding: 3px 8px;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+        
+        .subject-action-btn:hover {
+            color: #4FD1C5;
+            text-decoration: underline;
+        }
+        
+        /* Modal para agregar materia */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 100;
+            overflow: auto;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 60px 15px;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #CBD5E0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .btn-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            flex: 1;
+            margin: 0 5px;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background-color: #4FD1C5;
+            color: white;
+            border: none;
+        }
+        
+        .btn-secondary {
+            background-color: #E2E8F0;
+            color: #4A5568;
+            border: none;
+        }
+        
+        .status-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+        
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #4FD1C5;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .stats-summary {
+            background-color: #E6FFFA;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .stats-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .stats-value {
+            font-weight: 600;
+        }
+        
+        .footer-nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: white;
+            padding: 12px 0;
+            border-top: 1px solid #E2E8F0;
+        }
+        
+        .nav-item {
+            text-align: center;
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        .nav-item.active {
+            color: #4FD1C5;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Materias</h1>
+            <div class="menu-dots">•••</div>
+        </div>
+        
+        <div class="main-content">
+            <div class="stats-summary">
+                <div class="stats-title">Resumen del semestre</div>
+                <div class="stats-row">
+                    <span>Materias inscritas:</span>
+                    <span class="stats-value" id="total-subjects">5</span>
+                </div>
+                <div class="stats-row">
+                    <span>Total créditos:</span>
+                    <span class="stats-value" id="total-credits">16</span>
+                </div>
+                <div class="stats-row">
+                    <span>Tareas pendientes:</span>
+                    <span class="stats-value" id="pending-tasks">4</span>
+                </div>
+            </div>
+            
+            <div class="section-title">
+                <span>Mis Materias</span>
+                <button id="addSubjectButton" class="action-button">Añadir Materia</button>
+            </div>
+            
+            <div id="subjects-container">
+                <!-- Las materias se cargarán aquí -->
+            </div>
+        </div>
+        
+        <div class="footer-nav">
+            <a href="notifications" style="text-decoration:none; color: inherit;">
+                <div class="nav-item">
+                    <div class="nav-icon">📚</div>
+                    Notificaciones
+                </div>
+            </a>
+            <a href="subjects" style="text-decoration:none; color: inherit;">
+                <div class="nav-item">
+                    <div class="nav-icon">📚</div>
+                    Materias
+                </div>
+            </a>
+            <a href="/" style="text-decoration:none; color: inherit;">
+                <div class="nav-item">
+                    <div class="nav-icon">➕</div>
+                </div>
+            </a>
+            <a href="https://calendar.google.com/" target="_blank" style="text-decoration:none; color: inherit;">
+                <div class="nav-item">
+                    <div class="nav-icon">📆</div>
+                    Calendario
+                </div>
+            </a>
+            <a href="profile" style="text-decoration:none; color: inherit;">
+                <div class="nav-item">
+                    <div class="nav-icon">👤</div>
+                    Perfil
+                </div>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Modal para agregar materia -->
+    <div id="addSubjectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">Nueva Materia</div>
+            <div class="form-group">
+                <label for="subjectName">Nombre de la materia:</label>
+                <input type="text" id="subjectName" class="form-control" placeholder="Ej: Cálculo Diferencial" required>
+            </div>
+            <div class="form-group">
+                <label for="subjectProfessor">Nombre del profesor:</label>
+                <input type="text" id="subjectProfessor" class="form-control" placeholder="Ej: Juan Rodríguez" required>
+            </div>
+            <div class="form-group">
+                <label for="subjectCredits">Créditos:</label>
+                <input type="number" id="subjectCredits" class="form-control" min="1" max="6" value="3" required>
+            </div>
+            <div class="form-group">
+                <label for="subjectSchedule">Horario:</label>
+                <input type="text" id="subjectSchedule" class="form-control" placeholder="Ej: Lun, Mie 10:00-11:30">
+            </div>
+            <div id="subjectStatus" class="status-message"></div>
+            <div id="subjectLoading" class="status-loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Guardando materia...</p>
+            </div>
+            <div class="btn-row">
+                <div class="btn btn-secondary" onclick="closeSubjectModal()">Cancelar</div>
+                <div class="btn btn-primary" onclick="saveSubject()">Guardar</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Almacenamiento de materias del usuario
+        let userSubjects = [];
+        
+        // Datos de ejemplo para inicializar
+        const defaultSubjects = [
+            {
+                id: 1,
+                name: "Programación con Componentes",
+                professor: "Carlos Gómez",
+                credits: 3,
+                schedule: "Lun, Jue 14:00-15:30",
+                tasks: 2,
+                attendance: "90%"
+            },
+            {
+                id: 2,
+                name: "Cálculo Diferencial",
+                professor: "María Rodríguez",
+                credits: 4,
+                schedule: "Mar, Vie 10:00-12:00",
+                tasks: 1,
+                attendance: "85%"
+            },
+            {
+                id: 3,
+                name: "Algoritmos y Estructuras de Datos",
+                professor: "Jorge Pérez",
+                credits: 3,
+                schedule: "Mie, Vie 8:30-10:00",
+                tasks: 0,
+                attendance: "95%"
+            },
+            {
+                id: 4,
+                name: "Inglés Avanzado",
+                professor: "Ana Smith",
+                credits: 3,
+                schedule: "Mar, Jue 16:00-17:30",
+                tasks: 1,
+                attendance: "100%"
+            },
+            {
+                id: 5,
+                name: "Física I",
+                professor: "Roberto Martínez",
+                credits: 3,
+                schedule: "Lun, Mie 12:30-14:00",
+                tasks: 0,
+                attendance: "80%"
+            }
+        ];
+        
+        // Inicializar la app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar materias almacenadas o usar las predeterminadas
+            loadUserSubjects();
+            
+            // Configurar botón para abrir modal
+            document.getElementById('addSubjectButton').addEventListener('click', openSubjectModal);
+            
+            // Actualizar estadísticas
+            updateStatistics();
+        });
+        
+        // Abrir el modal para agregar materias
+        function openSubjectModal() {
+            document.getElementById('addSubjectModal').style.display = 'block';
+            document.getElementById('subjectStatus').style.display = 'none';
+            document.getElementById('subjectLoading').style.display = 'none';
+            
+            // Limpiar formulario
+            document.getElementById('subjectName').value = '';
+            document.getElementById('subjectProfessor').value = '';
+            document.getElementById('subjectCredits').value = '3';
+            document.getElementById('subjectSchedule').value = '';
+        }
+        
+        // Cerrar el modal
+        function closeSubjectModal() {
+            document.getElementById('addSubjectModal').style.display = 'none';
+        }
+        
+        // Guardar la materia
+        function saveSubject() {
+            const subjectName = document.getElementById('subjectName').value;
+            const subjectProfessor = document.getElementById('subjectProfessor').value;
+            const subjectCredits = document.getElementById('subjectCredits').value;
+            const subjectSchedule = document.getElementById('subjectSchedule').value;
+            
+            // Validar campos
+            if (!subjectName || !subjectProfessor || !subjectCredits) {
+                showStatus('subjectStatus', 'Por favor completa los campos requeridos', 'error');
+                return;
+            }
+            
+            // Mostrar indicador de carga
+            document.getElementById('subjectLoading').style.display = 'flex';
+            
+            try {
+                // Crear la materia
+                const newSubject = {
+                    id: Date.now(),
+                    name: subjectName,
+                    professor: subjectProfessor,
+                    credits: parseInt(subjectCredits),
+                    schedule: subjectSchedule,
+                    tasks: 0,
+                    attendance: "100%"
+                };
+                
+                // Guardar la materia localmente
+                userSubjects.push(newSubject);
+                saveUserSubjects();
+                
+                showStatus('subjectStatus', 'Materia guardada exitosamente', 'success');
+                setTimeout(() => {
+                    closeSubjectModal();
+                    updateSubjectsDisplay();
+                    updateStatistics();
+                }, 1000);
+            } catch (error) {
+                showStatus('subjectStatus', 'Error: ' + error.message, 'error');
+            } finally {
+                document.getElementById('subjectLoading').style.display = 'none';
+            }
+        }
+        
+        // Eliminar una materia
+        function deleteSubject(subjectId) {
+            const confirmDelete = confirm("¿Estás seguro de que deseas eliminar esta materia?");
+            if (confirmDelete) {
+                userSubjects = userSubjects.filter(subject => subject.id !== subjectId);
+                saveUserSubjects();
+                updateSubjectsDisplay();
+                updateStatistics();
+            }
+        }
+        
+        // Mostrar mensajes de estado
+        function showStatus(elementId, message, type) {
+            const statusElement = document.getElementById(elementId);
+            statusElement.textContent = message;
+            statusElement.className = 'status-message';
+            
+            if (type === 'success') {
+                statusElement.classList.add('status-success');
+            } else {
+                statusElement.classList.add('status-error');
+            }
+            
+            statusElement.style.display = 'block';
+        }
+        
+        // Guardar materias en localStorage
+        function saveUserSubjects() {
+            localStorage.setItem('planifySubjects', JSON.stringify(userSubjects));
+        }
+        
+        // Cargar materias del localStorage o usar las predeterminadas
+        function loadUserSubjects() {
+            const saved = localStorage.getItem('planifySubjects');
+            
+            if (saved) {
+                userSubjects = JSON.parse(saved);
+            } else {
+                // Si no hay materias guardadas, usar las predeterminadas
+                userSubjects = [...defaultSubjects];
+                saveUserSubjects();
+            }
+            
+            updateSubjectsDisplay();
+        }
+        
+        // Actualizar la interfaz con las materias del usuario
+        function updateSubjectsDisplay() {
+            const subjectsContainer = document.getElementById('subjects-container');
+            subjectsContainer.innerHTML = '';
+            
+            // Ordenar por nombre
+            const sortedSubjects = [...userSubjects].sort((a, b) => a.name.localeCompare(b.name));
+            
+            // Mostrar materias
+            sortedSubjects.forEach(subject => {
+                const subjectHtml = `
+                    <div class="subject-card">
+                        <div class="subject-info">
+                            <div class="subject-name">${subject.name}</div>
+                            <div class="subject-professor">Prof. ${subject.professor}</div>
+                            <div class="subject-stats">
+                                <div class="subject-stat">
+                                    <span class="icon">📅</span> ${subject.schedule}
+                                </div>
+                                <div class="subject-stat">
+                                    <span class="icon">✅</span> ${subject.attendance}
+                                </div>
+                                <div class="subject-stat">
+                                    <span class="icon">📝</span> ${subject.tasks} tarea${subject.tasks !== 1 ? 's' : ''}
+                                </div>
+                            </div>
+                            <div class="subject-actions">
+                                <button class="subject-action-btn" onclick="deleteSubject(${subject.id})">Eliminar</button>
+                            </div>
+                        </div>
+                        <div class="subject-credits">
+                            ${subject.credits}
+                        </div>
+                    </div>
+                `;
+                subjectsContainer.innerHTML += subjectHtml;
+            });
+        }
+        
+        // Actualizar estadísticas
+        function updateStatistics() {
+            const totalSubjects = userSubjects.length;
+            
+            const totalCredits = userSubjects.reduce((sum, subject) => sum + subject.credits, 0);
+            
+            const pendingTasks = userSubjects.reduce((sum, subject) => sum + subject.tasks, 0);
+            
+            document.getElementById('total-subjects').textContent = totalSubjects;
+            document.getElementById('total-credits').textContent = totalCredits;
+            document.getElementById('pending-tasks').textContent = pendingTasks;
+        }
+    </script>
+</body>
+</html>

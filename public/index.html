@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" href="/static/icon.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Planify - Planificador de Estudio</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background-color: #4FD1C5;
+            color: white;
+            text-align: center;
+            padding: 20px 15px 10px;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .header .menu-dots {
+            position: absolute;
+            right: 15px;
+            top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 15px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .task-card {
+            background-color: #E0FBFC;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .task-card.completed {
+            background-color: #f0f0f0;
+        }
+        
+        .task-progress {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .task-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-right: 60px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .task-title .percentage {
+            background-color: #E2E8F0;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        
+        .task-subtitle {
+            color: #4A5568;
+            font-size: 14px;
+            margin-top: 3px;
+        }
+        
+        .task-deadline {
+            font-size: 12px;
+            color: #718096;
+            text-align: right;
+            margin-top: 5px;
+        }
+        
+        .edit-icon {
+            position: absolute;
+            right: 45px;
+            top: 15px;
+            background-color: transparent;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: #4A5568;
+        }
+        
+        .action-button {
+            background-color: #4FD1C5;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-block;
+            float: right;
+        }
+        
+        .action-button:hover {
+            background-color: #38B2AC;
+        }
+        
+        .see-more {
+            text-align: center;
+            margin: 5px 0 15px;
+            font-size: 14px;
+            color: #4A5568;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 25px;
+            border: 2px dashed #CBD5E0;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .empty-state img {
+            width: 80px;
+            height: auto;
+            margin-bottom: 15px;
+        }
+        
+        .empty-state p {
+            font-size: 16px;
+            font-weight: 600;
+            color: #4A5568;
+            margin-bottom: 5px;
+        }
+        
+        .empty-state .subtext {
+            font-size: 14px;
+            color: #718096;
+            margin-bottom: 15px;
+        }
+        
+        .footer-nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: white;
+            padding: 12px 0;
+            border-top: 1px solid #E2E8F0;
+        }
+        
+        .nav-item {
+            text-align: center;
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        .nav-item.active {
+            color: #4FD1C5;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+        
+        /* Formularios y modales */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 100;
+            overflow: auto;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 60px 15px;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #CBD5E0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .btn-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            flex: 1;
+            margin: 0 5px;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background-color: #4FD1C5;
+            color: white;
+            border: none;
+        }
+        
+        .btn-secondary {
+            background-color: #E2E8F0;
+            color: #4A5568;
+            border: none;
+        }
+        
+        .status-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+        
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #4FD1C5;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Separador */
+        .divider {
+            height: 1px;
+            background-color: #E2E8F0;
+            margin: 20px 0;
+        }
+
+        /* Botón flotante para crear plan */
+        .create-plan-button {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background-color: #4FD1C5;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+            display: none; /* Inicialmente oculto */
+            z-index: 90;
+        }
+        
+        .create-plan-button:hover {
+            background-color: #38B2AC;
+        }
+        
+        /* Botones de acción de tareas */
+        .task-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+        
+        .task-action-btn {
+            background: none;
+            border: none;
+            color: #4A5568;
+            font-size: 13px;
+            padding: 3px 8px;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+        
+        .task-action-btn:hover {
+            color: #4FD1C5;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Tareas</h1>
+            <div class="menu-dots">•••</div>
+        </div>
+        
+        <div class="main-content">
+            <div class="section-title">
+                Tareas Pendientes
+                <button id="addTaskButton" class="action-button">Añadir Tarea</button>
+            </div>
+            
+            <div id="pending-tasks">
+                <!-- Las tareas pendientes se cargarán aquí -->
+            </div>
+            
+            <div id="empty-state" class="empty-state">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTUwIDEwQzI4LjUgMTAgMTEgMjcuNSAxMSA0OUMxMSA3MC41IDI4LjUgODggNTAgODhDNzEuNSA4OCA4OSA3MC41IDg5IDQ5Qzg5IDI3LjUgNzEuNSAxMCA1MCAxMFoiIHN0cm9rZT0iIzRGRDFDNSIgc3Ryb2tlLXdpZHRoPSI0Ii8+PHBhdGggZD0iTTUwIDMwQzUzLjMgMzAgNTYgMzIuNyA1NiAzNkM1NiAzOS4zIDUzLjMgNDIgNTAgNDJDNDYuNyA0MiA0NCAzOS4zIDQ0IDM2QzQ0IDMyLjcgNDYuNyAzMCA1MCAzMFoiIGZpbGw9IiM0RkQxQzUiLz48cGF0aCBkPSJNNTAgNTBDNTMuMyA1MCA1NiA2MCA1NiA2MEM1NiA2MCA1My4zIDcwIDUwIDcwQzQ2LjcgNzAgNDQgNjAgNDQgNjBDNDQgNjAgNDYuNyA1MCA1MCA1MFoiIGZpbGw9IiM0RkQxQzUiLz48L3N2Zz4=" alt="Icono de información">
+                <p>¿No sabes dónde empezar?</p>
+                <div class="subtext">Comienza registrando una tarea</div>
+                <button id="addEmptyTaskButton" class="btn btn-primary">Añadir Tarea</button>
+            </div>
+        </div>
+        
+        <!-- Botón flotante para crear plan -->
+        <button id="createPlanButton" class="create-plan-button">Crear Plan</button>
+        
+        <div class="footer-nav">
+            <a href="notifications" style="text-decoration:none; color: inherit;">
+                <div class="nav-item">
+                    <div class="nav-icon">📚</div>
+                    Notificaciones
+                </div>
+            </a>
+            <a href="subjects" style="text-decoration:none; color: inherit;">
+                <div class="nav-item">
+                    <div class="nav-icon">📚</div>
+                    Materias
+                </div>
+            </a>
+            <div class="nav-item active">
+                <div class="nav-icon">➕</div>
+            </div>
+            </a>
+            <a href="https://calendar.google.com/" target="_blank" style="text-decoration:none; color: inherit;">
+                <div class="nav-item">
+                    <div class="nav-icon">📆</div>
+                    Calendario
+                </div>
+            </a>
+            <a href="profile" style="text-decoration:none; color: inherit;">
+                <div class="nav-item">
+                    <div class="nav-icon">👤</div>
+                    Perfil
+                </div>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Modal para agregar tareas -->
+    <div id="addTaskModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">Nueva Tarea</div>
+            <div class="form-group">
+                <label for="taskName">Nombre de la tarea:</label>
+                <input type="text" id="taskName" class="form-control" placeholder="Ej: Proyecto 1" required>
+            </div>
+            <div class="form-group">
+                <label for="taskSubject">Materia:</label>
+                <input type="text" id="taskSubject" class="form-control" placeholder="Ej: Arquitectura de Software" required>
+            </div>
+            <div class="form-group">
+                <label for="taskWeight">Peso (0-1):</label>
+                <input type="number" id="taskWeight" class="form-control" min="0" max="1" step="0.05" value="0.15" required>
+            </div>
+            <div class="form-group">
+                <label for="taskDeadline">Fecha límite:</label>
+                <input type="datetime-local" id="taskDeadline" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="taskCredits">Créditos de la materia:</label>
+                <input type="number" id="taskCredits" class="form-control" min="1" max="6" value="3" required>
+            </div>
+            <div id="taskStatus" class="status-message"></div>
+            <div id="taskLoading" class="status-loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Guardando tarea...</p>
+            </div>
+            <div class="btn-row">
+                <div class="btn btn-secondary" onclick="closeTaskModal()">Cancelar</div>
+                <div class="btn btn-primary" onclick="saveTask()">Guardar</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para crear plan -->
+    <div id="createPlanModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">Crear Plan de Estudio</div>
+            <p style="text-align: center; margin-bottom: 15px;">
+                Se planificarán las siguientes tareas registradas y se exportarán a tu calendario.
+            </p>
+            <div id="planTasksList" style="margin-bottom: 20px; max-height: 200px; overflow-y: auto;">
+                <!-- Lista de tareas a planificar -->
+            </div>
+            <div id="planStatus" class="status-message"></div>
+            <div id="planLoading" class="status-loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Creando plan de estudio...</p>
+            </div>
+            <div class="btn-row">
+                <div class="btn btn-secondary" onclick="closePlanModal()">Cancelar</div>
+                <div class="btn btn-primary" onclick="createPlan()">Crear Plan</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Almacenamiento de tareas del usuario
+        let userTasks = [];
+        
+        // Configura la fecha mínima para el deadline e inicializa la app
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const localISOTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            document.getElementById('taskDeadline').value = localISOTime;
+            document.getElementById('taskDeadline').min = localISOTime;
+            
+            // Cargar tareas almacenadas
+            loadUserTasks();
+            
+            // Configurar botones para abrir modal de tarea
+            document.getElementById('addTaskButton').addEventListener('click', openTaskModal);
+            document.getElementById('addEmptyTaskButton').addEventListener('click', openTaskModal);
+            
+            // Configurar botón para crear plan
+            document.getElementById('createPlanButton').addEventListener('click', openPlanModal);
+            
+            // Actualizar visibilidad del botón de crear plan
+            updateCreatePlanButton();
+        });
+        
+        // Abrir el modal para agregar tareas
+        function openTaskModal() {
+            document.getElementById('addTaskModal').style.display = 'block';
+            document.getElementById('taskStatus').style.display = 'none';
+            document.getElementById('taskLoading').style.display = 'none';
+            
+            // Limpiar formulario
+            document.getElementById('taskName').value = '';
+            document.getElementById('taskSubject').value = '';
+            document.getElementById('taskWeight').value = '0.15';
+            
+            // Actualizar fecha límite
+            const now = new Date();
+            const localISOTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            document.getElementById('taskDeadline').value = localISOTime;
+        }
+        
+        // Cerrar el modal de tareas
+        function closeTaskModal() {
+            document.getElementById('addTaskModal').style.display = 'none';
+        }
+        
+        // Abrir el modal para crear plan
+        function openPlanModal() {
+            document.getElementById('createPlanModal').style.display = 'block';
+            document.getElementById('planStatus').style.display = 'none';
+            document.getElementById('planLoading').style.display = 'none';
+            
+            // Mostrar lista de tareas a planificar
+            const planTasksList = document.getElementById('planTasksList');
+            planTasksList.innerHTML = '';
+            
+            if (userTasks.length > 0) {
+                const tasksList = document.createElement('ul');
+                tasksList.style.listStyleType = 'none';
+                tasksList.style.padding = '0';
+                
+                userTasks.forEach(task => {
+                    const li = document.createElement('li');
+                    li.style.padding = '8px 0';
+                    li.style.borderBottom = '1px solid #E2E8F0';
+                    
+                    const deadline = new Date(task.deadline);
+                    const deadlineStr = deadline.toLocaleDateString() + ' ' + deadline.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    li.innerHTML = `
+                        <strong>${task.name}</strong> (${task.subject})<br>
+                        <small>Peso: ${task.weight}, Deadline: ${deadlineStr}</small>
+                    `;
+                    tasksList.appendChild(li);
+                });
+                
+                planTasksList.appendChild(tasksList);
+            } else {
+                planTasksList.innerHTML = '<p style="text-align: center; color: #718096;">No hay tareas para planificar</p>';
+            }
+        }
+        
+        // Cerrar el modal de crear plan
+        function closePlanModal() {
+            document.getElementById('createPlanModal').style.display = 'none';
+        }
+        
+        // Guardar la tarea (solo localmente)
+        function saveTask() {
+            const taskName = document.getElementById('taskName').value;
+            const taskSubject = document.getElementById('taskSubject').value;
+            const taskWeight = document.getElementById('taskWeight').value;
+            const taskDeadline = document.getElementById('taskDeadline').value;
+            const taskCredits = document.getElementById('taskCredits').value;
+            
+            // Validar campos
+            if (!taskName || !taskSubject || !taskWeight || !taskDeadline) {
+                showStatus('taskStatus', 'Por favor completa todos los campos', 'error');
+                return;
+            }
+            
+            // Mostrar indicador de carga
+            document.getElementById('taskLoading').style.display = 'flex';
+            
+            try {
+                // Crear la tarea (solo para la interfaz)
+                const newTask = {
+                    id: Date.now(),
+                    name: taskName,
+                    subject: taskSubject,
+                    weight: parseFloat(taskWeight),
+                    deadline: new Date(taskDeadline),
+                    creditos: parseInt(taskCredits),
+                    created: new Date()
+                };
+                
+                // Guardar la tarea localmente
+                userTasks.push(newTask);
+                saveUserTasks();
+                
+                showStatus('taskStatus', 'Tarea guardada exitosamente', 'success');
+                setTimeout(() => {
+                    closeTaskModal();
+                    updateTasksDisplay();
+                    updateCreatePlanButton();
+                }, 1000);
+            } catch (error) {
+                showStatus('taskStatus', 'Error: ' + error.message, 'error');
+            } finally {
+                document.getElementById('taskLoading').style.display = 'none';
+            }
+        }
+        
+        // Crear plan y enviar al servidor
+        async function createPlan() {
+            if (userTasks.length === 0) {
+                showStatus('planStatus', 'No hay tareas para planificar', 'error');
+                return;
+            }
+            
+            // Mostrar indicador de carga
+            document.getElementById('planLoading').style.display = 'flex';
+            
+            try {
+                // Convertir tareas al formato esperado por el servidor
+                const tasksForServer = userTasks.map(task => ({
+                    nombre: task.name,
+                    materia: task.subject,
+                    peso: task.weight,
+                    deadline: task.deadline.toISOString(),
+                    creditos: task.creditos || 3
+                }));
+                
+                // Enviar al servidor
+                const response = await fetch('/planificar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        tareas: tasksForServer,
+                        export_to_calendar: true,
+                        alpha: {},
+                        beta: {}
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.estado === 'Optimal' || (result.plan && result.plan.length > 0)) {
+                    showStatus('planStatus', `Plan creado exitosamente con ${result.plan.length} tareas planificadas`, 'success');
+                    setTimeout(() => {
+                        closePlanModal();
+                    }, 2000);
+                } else {
+                    showStatus('planStatus', 'No se pudo crear el plan: ' + (result.mensaje || 'Error desconocido'), 'error');
+                }
+            } catch (error) {
+                showStatus('planStatus', 'Error: ' + error.message, 'error');
+            } finally {
+                document.getElementById('planLoading').style.display = 'none';
+            }
+        }
+        
+        // Eliminar una tarea
+        function deleteTask(taskId) {
+            userTasks = userTasks.filter(task => task.id !== taskId);
+            saveUserTasks();
+            updateTasksDisplay();
+            updateCreatePlanButton();
+        }
+        
+        // Mostrar mensajes de estado
+        function showStatus(elementId, message, type) {
+            const statusElement = document.getElementById(elementId);
+            statusElement.textContent = message;
+            statusElement.className = 'status-message';
+            
+            if (type === 'success') {
+                statusElement.classList.add('status-success');
+            } else {
+                statusElement.classList.add('status-error');
+            }
+            
+            statusElement.style.display = 'block';
+        }
+        
+        // Guardar tareas en localStorage
+        function saveUserTasks() {
+            localStorage.setItem('planifyTasks', JSON.stringify(userTasks));
+        }
+        
+        // Cargar tareas del localStorage
+        function loadUserTasks() {
+            const saved = localStorage.getItem('planifyTasks');
+            userTasks = saved ? JSON.parse(saved) : [];
+            
+            // Convertir strings de fecha a objetos Date
+            userTasks.forEach(task => {
+                task.deadline = new Date(task.deadline);
+                task.created = new Date(task.created);
+            });
+            
+            updateTasksDisplay();
+            updateCreatePlanButton();
+        }
+        
+        // Actualizar la interfaz con las tareas del usuario
+        function updateTasksDisplay() {
+            const pendingContainer = document.getElementById('pending-tasks');
+            pendingContainer.innerHTML = '';
+            
+            // Ordenar por fecha límite (más cercana primero)
+            const sortedTasks = [...userTasks].sort((a, b) => a.deadline - b.deadline);
+            
+            // Mostrar tareas
+            sortedTasks.forEach(task => {
+                const daysLeft = Math.ceil((new Date(task.deadline) - new Date()) / (1000 * 60 * 60 * 24));
+                const deadlineText = daysLeft > 0 ? 
+                    `Deadline en ${daysLeft} día${daysLeft !== 1 ? 's' : ''}` : 
+                    'Deadline vencida';
+                
+                const taskHtml = `
+                    <div class="task-card">
+                        <div class="task-title">
+                            ${task.name} <span class="percentage">(${task.weight * 100}%)</span>
+                        </div>
+                        <div class="task-subtitle">${task.subject}</div>
+                        <div class="task-deadline">${deadlineText}</div>
+                        <div class="task-actions">
+                            <button class="task-action-btn" onclick="deleteTask(${task.id})">Eliminar</button>
+                        </div>
+                    </div>
+                `;
+                pendingContainer.innerHTML += taskHtml;
+            });
+            
+            // Mostrar u ocultar el estado vacío
+            document.getElementById('empty-state').style.display = 
+                (userTasks.length === 0) ? 'block' : 'none';
+        }
+        
+        // Actualizar visibilidad del botón de crear plan
+        function updateCreatePlanButton() {
+            const planButton = document.getElementById('createPlanButton');
+            if (userTasks.length > 0) {
+                planButton.style.display = 'block';
+                planButton.textContent = `Crear Plan (${userTasks.length})`;
+            } else {
+                planButton.style.display = 'none';
+            }
+        }
+        
+        // Borrar todas las tareas (función para depuración)
+        function clearAllTasks() {
+            userTasks = [];
+            saveUserTasks();
+            updateTasksDisplay();
+            updateCreatePlanButton();
+        }
+    </script>
+</body>
+</html>

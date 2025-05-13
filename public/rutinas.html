@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de Rutinas - Planify</title>
+  <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Generador de Rutinas Diarias</h1>
+      <p>Crea eventos recurrentes para tus actividades rutinarias con un solo clic</p>
+    </header>
+    
+    <main>
+      <div class="card">
+        <h2>Selecciona un tipo de rutina</h2>
+        <p>Todos los eventos se crearán para la semana actual comenzando desde hoy</p>
+        
+        <div class="routine-options">
+          <div class="routine-card">
+            <h3>Rutina Universitaria</h3>
+            <ul>
+              <li>Dormir (23:00 - 6:30)</li>
+              <li>Desayuno (6:45 - 7:15)</li>
+              <li>Transporte a la universidad (7:30 - 8:30)</li>
+              <li>Almuerzo (12:00 - 13:00)</li>
+              <li>Transporte a casa (18:00 - 19:00)</li>
+              <li>Cena (20:00 - 20:30)</li>
+            </ul>
+            <button id="createUniversityRoutine" class="button primary">Crear Rutina Universitaria</button>
+          </div>
+          
+          <div class="routine-card">
+            <h3>Rutina de Trabajo</h3>
+            <ul>
+              <li>Dormir (23:30 - 7:00)</li>
+              <li>Desayuno (7:15 - 7:45)</li>
+              <li>Transporte al trabajo (8:00 - 9:00)</li>
+              <li>Almuerzo (13:00 - 14:00)</li>
+              <li>Transporte a casa (18:30 - 19:30)</li>
+              <li>Cena (20:30 - 21:00)</li>
+            </ul>
+            <button id="createWorkRoutine" class="button primary">Crear Rutina de Trabajo</button>
+          </div>
+          
+          <div class="routine-card">
+            <h3>Rutina de Fin de Semana</h3>
+            <ul>
+              <li>Dormir (00:30 - 9:00)</li>
+              <li>Desayuno/Brunch (9:30 - 10:30)</li>
+              <li>Actividad recreativa (15:00 - 18:00)</li>
+              <li>Cena (20:30 - 22:00)</li>
+            </ul>
+            <button id="createWeekendRoutine" class="button primary">Crear Rutina de Fin de Semana</button>
+          </div>
+        </div>
+        
+        <div class="action-buttons">
+          <button id="deleteAllEvents" class="button danger">Borrar Todos los Eventos</button>
+          <a href="/" class="button secondary">Volver al Planificador</a>
+        </div>
+      </div>
+      
+      <div id="status" class="status-message"></div>
+    </main>
+  </div>
+
+  <script src="static/rutinas.js"></script>
+</body>
+</html>

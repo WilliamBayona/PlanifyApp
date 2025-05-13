@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificaciones - Planify</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background-color: #4FD1C5;
+            color: white;
+            text-align: center;
+            padding: 20px 15px 10px;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .header .menu-dots {
+            position: absolute;
+            right: 15px;
+            top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 15px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .insights-container {
+            margin-bottom: 20px;
+        }
+        
+        .insight-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: relative;
+            border-left: 4px solid #4FD1C5;
+        }
+        
+        .insight-card.new {
+            border-left-color: #F6AD55;
+        }
+        
+        .insight-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .insight-icon {
+            font-size: 18px;
+            margin-right: 10px;
+            background-color: #E6FFFA;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .insight-card.new .insight-icon {
+            background-color: #FEEBC8;
+        }
+        
+        .insight-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .insight-date {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 3px;
+        }
+        
+        .insight-content {
+            font-size: 14px;
+            color: #4A5568;
+            line-height: 1.5;
+        }
+        
+        .insight-buttons {
+            display: flex;
+            margin-top: 12px;
+        }
+        
+        .insight-btn {
+            background: none;
+            border: none;
+            color: #4A5568;
+            font-size: 13px;
+            padding: 5px 10px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        
+        .insight-btn:hover {
+            color: #4FD1C5;
+            text-decoration: underline;
+        }
+        
+        .badge {
+            background-color: #F6AD55;
+            color: white;
+            border-radius: 20px;
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+        
+        .notification-category {
+            margin-bottom: 5px;
+            padding: 5px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .category-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #4A5568;
+        }
+        
+        .settings-link {
+            color: #4FD1C5;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .notifications-summary {
+            background-color: #E6FFFA;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .summary-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .summary-value {
+            font-weight: 600;
+        }
+        
+        .no-notifications {
+            text-align: center;
+            padding: 30px 0;
+            color: #718096;
+        }
+        
+        .no-notifications img {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+        }
+
+        .footer-nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: white;
+            padding: 12px 0;
+            border-top: 1px solid #E2E8F0;
+        }
+        
+        .nav-item {
+            text-align: center;
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        .nav-item.active {
+            color: #4FD1C5;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .action-button {
+            background-color: #4FD1C5;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .action-button:hover {
+            background-color: #38B2AC;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Notificaciones</h1>
+            <div class="menu-dots">•••</div>
+        </div>
+        
+        <div class="main-content">
+            <div class="notifications-summary">
+                <div class="summary-title">Resumen de actividad</div>
+                <div class="summary-row">
+                    <span>Insights personalizados:</span>
+                    <span class="summary-value">6</span>
+                </div>
+                <div class="summary-row">
+                    <span>Nuevos insights esta semana:</span>
+                    <span class="summary-value">2</span>
+                </div>
+                <div class="summary-row">
+                    <span>Próxima actualización de insights:</span>
+                    <span class="summary-value">3 días</span>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <span>Insights personalizados <span class="badge">2 nuevos</span></span>
+                <button class="action-button" onclick="markAllAsRead()">Marcar todo como leído</button>
+            </div>
+            
+            <div class="insights-container">
+                <div class="insight-card new">
+                    <div class="insight-header">
+                        <div class="insight-icon">📊</div>
+                        <div>
+                            <div class="insight-title">Hábitos de estudio detectados</div>
+                            <div class="insight-date">Hoy, 10:25 AM</div>
+                        </div>
+                    </div>
+                    <div class="insight-content">
+                        <p>Hemos observado que eres más productivo trabajando en las tardes, entre 2:00 PM y 6:00 PM. Lo tendremos en cuenta para futuros horarios de estudio.</p>
+                    </div>
+                    <div class="insight-buttons">
+                        <button class="insight-btn">Utilizar sugerencia</button>
+                        <button class="insight-btn">Descartar</button>
+                    </div>
+                </div>
+
+                <div class="insight-card new">
+                    <div class="insight-header">
+                        <div class="insight-icon">🎯</div>
+                        <div>
+                            <div class="insight-title">Rendimiento por materia</div>
+                            <div class="insight-date">Ayer, 4:18 PM</div>
+                        </div>
+                    </div>
+                    <div class="insight-content">
+                        <p>Hemos notado que te rinde más trabajar en Arquitectura de Software los miércoles de 2:00 PM a 5:00 PM. Lo tendremos en cuenta en futuros horarios.</p>
+                    </div>
+                    <div class="insight-buttons">
+                        <button class="insight-btn">Utilizar sugerencia</button>
+                        <button class="insight-btn">Descartar</button>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <div class="insight-header">
+                        <div class="insight-icon">⏱️</div>
+                        <div>
+                            <div class="insight-title">Periodos de concentración</div>
+                            <div class="insight-date">25 mayo, 9:30 AM</div>
+                        </div>
+                    </div>
+                    <div class="insight-content">
+                        <p>Tu concentración es más alta en periodos de 45 minutos, seguidos de descansos de 10 minutos. Te recomendamos utilizar la técnica Pomodoro con este ritmo.</p>
+                    </div>
+                    <div class="insight-buttons">
+                        <button class="insight-btn">Utilizar sugerencia</button>
+                        <button class="insight-btn">Descartar</button>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <div class="insight-header">
+                        <div class="insight-icon">🧠</div>
+                        <div>
+                            <div class="insight-title">Eficiencia cognitiva</div>
+                            <div class="insight-date">22 mayo, 11:15 AM</div>
+                        </div>
+                    </div>
+                    <div class="insight-content">
+                        <p>Tus tareas de Cálculo Diferencial son más eficientes cuando las realizas por la mañana. Hemos observado un 25% más de productividad antes del mediodía.</p>
+                    </div>
+                    <div class="insight-buttons">
+                        <button class="insight-btn">Utilizar sugerencia</button>
+                        <button class="insight-btn">Descartar</button>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <div class="insight-header">
+                        <div class="insight-icon">📚</div>
+                        <div>
+                            <div class="insight-title">Distribución de trabajo</div>
+                            <div class="insight-date">18 mayo, 3:45 PM</div>
+                        </div>
+                    </div>
+                    <div class="insight-content">
+                        <p>Tu rendimiento aumenta cuando alternas entre materias teóricas y prácticas. Te sugerimos intercalar sesiones de Física I con Algoritmos y Estructuras de Datos.</p>
+                    </div>
+                    <div class="insight-buttons">
+                        <button class="insight-btn">Utilizar sugerencia</button>
+                        <button class="insight-btn">Descartar</button>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <div class="insight-header">
+                        <div class="insight-icon">📝</div>
+                        <div>
+                            <div class="insight-title">Completado de tareas</div>
+                            <div class="insight-date">15 mayo, 6:20 PM</div>
+                        </div>
+                    </div>
+                    <div class="insight-content">
+                        <p>Completas el 80% de tus tareas cuando las planificas con al menos 3 días de anticipación. Te recomendamos planificar con más antelación para mejores resultados.</p>
+                    </div>
+                    <div class="insight-buttons">
+                        <button class="insight-btn">Utilizar sugerencia</button>
+                        <button class="insight-btn">Descartar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">Configuración de notificaciones</div>
+            
+            <div class="notification-category">
+                <span class="category-title">Insights basados en rendimiento</span>
+                <a href="#" class="settings-link">Configurar</a>
+            </div>
+            
+            <div class="notification-category">
+                <span class="category-title">Recordatorios de tareas</span>
+                <a href="#" class="settings-link">Configurar</a>
+            </div>
+            
+            <div class="notification-category">
+                <span class="category-title">Actualizaciones del plan</span>
+                <a href="#" class="settings-link">Configurar</a>
+            </div>
+        </div>
+        
+        <div class="footer-nav">
+            <div class="nav-item active">
+                <div class="nav-icon">🔔</div>
+                Notificaciones
+            </div>
+            <a href="subjects" style="text-decoration:none; color: inherit;">
+                <div class="nav-item">
+                    <div class="nav-icon">📚</div>
+                    Materias
+                </div>
+            </a>
+            <a href="/" style="text-decoration:none; color: inherit;">
+                <div class="nav-item">
+                    <div class="nav-icon">➕</div>
+                </div>
+            </a>
+            <a href="https://calendar.google.com/" target="_blank" style="text-decoration:none; color: inherit;">
+                <div class="nav-item">
+                    <div class="nav-icon">📆</div>
+                    Calendario
+                </div>
+            </a>
+            <a href="profile" style="text-decoration:none; color: inherit;">
+                <div class="nav-item">
+                    <div class="nav-icon">👤</div>
+                    Perfil
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Datos de ejemplo para inicializar
+        let notifications = [
+            {
+                id: 1,
+                icon: "📊",
+                title: "Hábitos de estudio detectados",
+                content: "Hemos observado que eres más productivo trabajando en las tardes, entre 2:00 PM y 6:00 PM. Lo tendremos en cuenta para futuros horarios de estudio.",
+                date: "Hoy, 10:25 AM",
+                isNew: true,
+                timestamp: new Date().getTime()
+            },
+            {
+                id: 2,
+                icon: "🎯",
+                title: "Rendimiento por materia",
+                content: "Hemos notado que te rinde más trabajar en Arquitectura de Software los miércoles de 2:00 PM a 5:00 PM. Lo tendremos en cuenta en futuros horarios.",
+                date: "Ayer, 4:18 PM",
+                isNew: true,
+                timestamp: new Date().getTime() - 86400000
+            },
+            {
+                id: 3,
+                icon: "⏱️",
+                title: "Periodos de concentración",
+                content: "Tu concentración es más alta en periodos de 45 minutos, seguidos de descansos de 10 minutos. Te recomendamos utilizar la técnica Pomodoro con este ritmo.",
+                date: "25 mayo, 9:30 AM",
+                isNew: false,
+                timestamp: new Date().getTime() - 172800000
+            },
+            {
+                id: 4,
+                icon: "🧠",
+                title: "Eficiencia cognitiva",
+                content: "Tus tareas de Cálculo Diferencial son más eficientes cuando las realizas por la mañana. Hemos observado un 25% más de productividad antes del mediodía.",
+                date: "22 mayo, 11:15 AM",
+                isNew: false,
+                timestamp: new Date().getTime() - 259200000
+            },
+            {
+                id: 5,
+                icon: "📚",
+                title: "Distribución de trabajo",
+                content: "Tu rendimiento aumenta cuando alternas entre materias teóricas y prácticas. Te sugerimos intercalar sesiones de Física I con Algoritmos y Estructuras de Datos.",
+                date: "18 mayo, 3:45 PM",
+                isNew: false,
+                timestamp: new Date().getTime() - 432000000
+            },
+            {
+                id: 6,
+                icon: "📝",
+                title: "Completado de tareas",
+                content: "Completas el 80% de tus tareas cuando las planificas con al menos 3 días de anticipación. Te recomendamos planificar con más antelación para mejores resultados.",
+                date: "15 mayo, 6:20 PM",
+                isNew: false,
+                timestamp: new Date().getTime() - 604800000
+            }
+        ];
+        
+        // Inicializar la app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadNotifications();
+        });
+        
+        // Cargar notificaciones
+        function loadNotifications() {
+            // Si hubiera una API, aquí haríamos el fetch
+            // Por ahora usamos los datos de ejemplo
+            updateNotificationsDisplay();
+        }
+        
+        // Actualizar la visualización de notificaciones
+        function updateNotificationsDisplay() {
+            const insightsContainer = document.querySelector('.insights-container');
+            insightsContainer.innerHTML = '';
+            
+            // Ordenar por más recientes primero
+            const sortedNotifications = notifications.sort((a, b) => b.timestamp - a.timestamp);
+            
+            // Contar notificaciones nuevas
+            const newCount = notifications.filter(n => n.isNew).length;
+            document.querySelector('.badge').textContent = newCount + (newCount === 1 ? ' nuevo' : ' nuevos');
+            
+            // Si no hay notificaciones, mostrar mensaje
+            if (sortedNotifications.length === 0) {
+                insightsContainer.innerHTML = `
+                    <div class="no-notifications">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTUwIDEwQzI4LjUgMTAgMTEgMjcuNSAxMSA0OUMxMSA3MC41IDI4LjUgODggNTAgODhDNzEuNSA4OCA4OSA3MC41IDg5IDQ5Qzg5IDI3LjUgNzEuNSAxMCA1MCAxMFoiIHN0cm9rZT0iIzRGRDFDNSIgc3Ryb2tlLXdpZHRoPSI0Ii8+PHBhdGggZD0iTTUwIDMwQzUzLjMgMzAgNTYgMzIuNyA1NiAzNkM1NiAzOS4zIDUzLjMgNDIgNTAgNDJDNDYuNyA0MiA0NCAzOS4zIDQ0IDM2QzQ0IDMyLjcgNDYuNyAzMCA1MCAzMFoiIGZpbGw9IiM0RkQxQzUiLz48cGF0aCBkPSJNNTAgNTBDNTMuMyA1MCA1NiA2MCA1NiA2MEM1NiA2MCA1My4zIDcwIDUwIDcwQzQ2LjcgNzAgNDQgNjAgNDQgNjBDNDQgNjAgNDYuNyA1MCA1MCA1MFoiIGZpbGw9IiM0RkQxQzUiLz48L3N2Zz4=" alt="No hay notificaciones">
+                        <p>No tienes notificaciones</p>
+                        <div>Las alertas e insights aparecerán aquí</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Mostrar las notificaciones
+            sortedNotifications.forEach(notification => {
+                const notificationHtml = `
+                    <div class="insight-card ${notification.isNew ? 'new' : ''}">
+                        <div class="insight-header">
+                            <div class="insight-icon">${notification.icon}</div>
+                            <div>
+                                <div class="insight-title">${notification.title}</div>
+                                <div class="insight-date">${notification.date}</div>
+                            </div>
+                        </div>
+                        <div class="insight-content">
+                            <p>${notification.content}</p>
+                        </div>
+                        <div class="insight-buttons">
+                            <button class="insight-btn" onclick="useInsight(${notification.id})">Utilizar sugerencia</button>
+                            <button class="insight-btn" onclick="dismissInsight(${notification.id})">Descartar</button>
+                        </div>
+                    </div>
+                `;
+                insightsContainer.innerHTML += notificationHtml;
+            });
+            
+            // Actualizar el resumen
+            document.querySelector('#total-insights').textContent = notifications.length;
+            document.querySelector('#new-insights').textContent = newCount;
+        }
+        
+        // Marcar todas las notificaciones como leídas
+        function markAllAsRead() {
+            notifications.forEach(notification => {
+                notification.isNew = false;
+            });
+            
+            // En una app real, enviaríamos esto al servidor
+            // saveNotifications();
+            
+            updateNotificationsDisplay();
+            alert('Se han marcado todas las notificaciones como leídas');
+        }
+        
+        // Usar sugerencia de un insight
+        function useInsight(id) {
+            const notification = notifications.find(n => n.id === id);
+            if (notification) {
+                notification.isNew = false;
+                // En una app real, aquí realizaríamos alguna acción
+                // como ajustar el algoritmo de planificación
+                
+                alert(`Sugerencia aplicada: "${notification.title}"`);
+                updateNotificationsDisplay();
+            }
+        }
+        
+        // Descartar un insight
+        function dismissInsight(id) {
+            notifications = notifications.filter(n => n.id !== id);
+            
+            // En una app real, enviaríamos esto al servidor
+            // saveNotifications();
+            
+            updateNotificationsDisplay();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - Planify</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background-color: #4FD1C5;
+            color: white;
+            text-align: center;
+            padding: 20px 15px 10px;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .header .menu-dots {
+            position: absolute;
+            right: 15px;
+            top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 15px;
+        }
+        
+        /* Perfil de usuario */
+        .user-profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .profile-image-container {
+            position: relative;
+            margin-bottom: 10px;
+        }
+        
+        .profile-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .verified-badge {
+            position: absolute;
+            right: 0;
+            bottom: 10px;
+            background-color: #4FD1C5;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            border: 2px solid white;
+        }
+        
+        .user-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .user-info {
+            font-size: 14px;
+            color: #718096;
+            text-align: center;
+        }
+        
+        /* Sección de estadísticas */
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            margin-top: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .stat-card {
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            background-color: #E6FFFA;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .stat-info {
+            font-size: 14px;
+        }
+        
+        .stat-value {
+            font-weight: 600;
+            font-size: 16px;
+            line-height: 1.2;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        /* Sección de medallas */
+        .medals-section {
+            margin-top: 20px;
+        }
+        
+        .medals-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .medal-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .medal-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 5px;
+        }
+        
+        .medal-name {
+            font-size: 12px;
+            color: #718096;
+            text-align: center;
+        }
+        
+        /* Navegación inferior */
+        .footer-nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: white;
+            padding: 12px 0;
+            border-top: 1px solid #E2E8F0;
+        }
+        
+        .nav-item {
+            text-align: center;
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        .nav-item.active {
+            color: #4FD1C5;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Perfil</h1>
+            <div class="menu-dots">•••</div>
+        </div>
+        
+        <div class="main-content">
+            <!-- Perfil de usuario -->
+            <div class="user-profile">
+                <div class="profile-image-container">
+                    <img class="profile-image" id="profileImage" src="https://i.pravatar.cc/300" alt="Foto de perfil">
+                    <div class="verified-badge">✓</div>
+                </div>
+                <div class="user-name" id="userName">Usuario</div>
+                <div class="user-info" id="userInfo">
+                    Se unió en Abril de 2025<br>
+                    5 Amigos
+                </div>
+            </div>
+            
+            <!-- Estadísticas -->
+            <div class="section-title">Estadísticas</div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-info">
+                        <div class="stat-value">¡5 días en racha!</div>
+                        <div class="stat-label">Actividad consecutiva</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">📝</div>
+                    <div class="stat-info">
+                        <div class="stat-value">¡10 tareas completadas!</div>
+                        <div class="stat-label">En el último mes</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <div class="stat-value">68% tareas completadas</div>
+                        <div class="stat-label">En los últimos 3 planes</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <div class="stat-value">¡5 planes creados!</div>
+                        <div class="stat-label">Planificación efectiva</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Medallas -->
+            <div class="section-title">Medallas</div>
+            <div class="medals-grid">
+                <div class="medal-card">
+                    <img class="medal-icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgODAgMTAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjQwIiBjeT0iNDAiIHI9IjM1IiBmaWxsPSIjOEVDQzVBIi8+PGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iMjUiIGZpbGw9IiNDN0ZGQTAiLz48cGF0aCBkPSJNMzAgMzBDMzAgMzAgNDIgMTggNTAgMzBDNTggNDIgNDAgNjAgNDAgNjBDNDAgNjAgMjIgNDIgMzAgMzBaIiBmaWxsPSIjNUE5OTNDIi8+PHBhdGggZD0iTTQwIDgwTDQ4IDYwSDMyTDQwIDgwWiIgZmlsbD0iIzIxNTVDRCIvPjxyZWN0IHg9IjM4IiB5PSI1MCIgd2lkdGg9IjQiIGhlaWdodD0iMTAiIGZpbGw9IiM1QTk5M0MiLz48Y2lyY2xlIGN4PSIzMCIgY3k9IjM1IiByPSI1IiBmaWxsPSIjRkZGRkZGIiBmaWxsLW9wYWNpdHk9IjAuNSIvPjwvc3ZnPg==" alt="Medalla Ecologista">
+                    <div class="medal-name">Ver más</div>
+                </div>
+                
+                <div class="medal-card">
+                    <img class="medal-icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgODAgMTAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjQwIiBjeT0iNDAiIHI9IjM1IiBmaWxsPSIjRkY5ODM0Ii8+PGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iMjUiIGZpbGw9IiNGRkM0OTgiLz48cGF0aCBkPSJNMjUgNDBDMjUgMzUgMzUgMzAgNDAgMzBDNDMgMzAgNDUgMzIgNDggMzVDNTAgMzcgNTIgMzggNTUgMzhDNjAgMzggNjUgMzUgNjUgMzVDNjUgNDUgNjAgNTUgNDAgNTVDMjUgNTUgMjUgNDcgMjUgNDBaIiBmaWxsPSIjQzQ2QTEwIi8+PHBhdGggZD0iTTQwIDgwTDQ4IDYwSDMyTDQwIDgwWiIgZmlsbD0iIzIxNTVDRCIvPjxjaXJjbGUgY3g9IjU1IiBjeT0iMzAiIHI9IjUiIGZpbGw9IiNGRkZGRkYiIGZpbGwtb3BhY2l0eT0iMC41Ii8+PHJlY3QgeD0iMzgiIHk9IjQ1IiB3aWR0aD0iNCIgaGVpZ2h0PSIxMCIgZmlsbD0iI0M0NkExMCIvPjwvc3ZnPg==" alt="Medalla Trabajador">
+                    <div class="medal-name">Ver más</div>
+                </div>
+                
+                <div class="medal-card">
+                    <img class="medal-icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgODAgMTAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjQwIiBjeT0iNDAiIHI9IjM1IiBmaWxsPSIjRkZEMzcwIi8+PGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iMjUiIGZpbGw9IiNGRkU5QjgiLz48cGF0aCBkPSJNMzAgMzVDMzAgMzAgMzUgMzAgNDAgMzBDNDUgMzAgNTAgMzAgNTAgMzVDNTAgNDAgNDUgNDUgNDAgNDVDMzUgNDUgMzAgNDAgMzAgMzVaIiBmaWxsPSIjRkY5ODM0Ii8+PHBhdGggZD0iTTQwIDgwTDQ4IDYwSDMyTDQwIDgwWiIgZmlsbD0iIzIxNTVDRCIvPjxjaXJjbGUgY3g9IjMwIiBjeT0iMzUiIHI9IjUiIGZpbGw9IiNGRkZGRkYiIGZpbGwtb3BhY2l0eT0iMC41Ii8+PHJlY3QgeD0iMzgiIHk9IjQ1IiB3aWR0aD0iNCIgaGVpZ2h0PSIxMCIgZmlsbD0iI0ZGOTgzNCIvPjwvc3ZnPg==" alt="Medalla Novato">
+                    <div class="medal-name">Ver más</div>
+                </div>
+                
+                <div class="medal-card">
+                    <img class="medal-icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgODAgMTAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjQwIiBjeT0iNDAiIHI9IjM1IiBmaWxsPSIjODA1QTNDIi8+PGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iMjUiIGZpbGw9IiNCQzkxN0MiLz48cGF0aCBkPSJNMjUgMjVDMjUgMjUgMzAgMTUgNDAgMTVDNTAgMTUgNTUgMjUgNTUgMjVDNTUgMjUgNTUgMzUgNTAgNDBDNDUgNDUgMzUgNDUgMzAgNDBDMjUgMzUgMjUgMjUgMjUgMjUiIGZpbGw9IiM1NjNCMjYiLz48cGF0aCBkPSJNMzAgMzBDMzAgMzAgMzUgMjAgNDAgMjBDNDUgMjAgNTAgMzAgNTAgMzBDNTAgMzAgNDUgNDAgNDAgNDBDMzUgNDAgMzAgMzAgMzAgMzAiIGZpbGw9IiM2QjRBMzAiLz48cGF0aCBkPSJNMzUgMjhDMzUgMjggNDAgMzUgNDUgMjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48Y2lyY2xlIGN4PSIzNSIgY3k9IjI1IiByPSI1IiBmaWxsPSIjMjgxRjE2Ii8+PGNpcmNsZSBjeD0iNDUiIGN5PSIyNSIgcj0iNSIgZmlsbD0iIzI4MUYxNiIvPjxwYXRoIGQ9Ik00MCA4MEw0OCA2MEgzMkw0MCA4MFoiIGZpbGw9IiMyMTU1Q0QiLz48cmVjdCB4PSIzOCIgeT0iNDAiIHdpZHRoPSI0IiBoZWlnaHQ9IjE1IiBmaWxsPSIjNTYzQjI2Ii8+PC9zdmc+" alt="Medalla Osito">
+                    <div class="medal-name">Ver más</div>
+                </div>
+                
+                <div class="medal-card">
+                    <img class="medal-icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgODAgMTAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjQwIiBjeT0iNDAiIHI9IjM1IiBmaWxsPSIjODA4MDgwIi8+PGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iMjUiIGZpbGw9IiNDNEM0QzQiLz48cGF0aCBkPSJNNDAgODBMNDggNjBIMzJMNDAgODBaIiBmaWxsPSIjMjE1NUNEIi8+PC9zdmc+" alt="Medalla Bloqueada">
+                    <div class="medal-name">Ver más</div>
+                </div>
+                
+                <div class="medal-card">
+                    <img class="medal-icon" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgODAgMTAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjQwIiBjeT0iNDAiIHI9IjM1IiBmaWxsPSIjNDQ0NDQ0IiBmaWxsLW9wYWNpdHk9IjAuNSIvPjxwYXRoIGQ9Ik00MCA4MEw0OCA2MEgzMkw0MCA4MFoiIGZpbGw9IiMyMTU1Q0QiIGZpbGwtb3BhY2l0eT0iMC41Ii8+PHRleHQgeD0iNDAiIHk9IjQ1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iNDAiIGZpbGw9IiM4ODg4ODgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPj88L3RleHQ+PC9zdmc+" alt="Medalla Desconocida">
+                    <div class="medal-name">Ver más</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-nav">
+            <a href="notifications" style="text-decoration:none; color: inherit;">
+                <div class="nav-item">
+                    <div class="nav-icon">📚</div>
+                    Notificaciones
+                </div>
+            </a>
+            <a href="subjects" style="text-decoration:none; color: inherit;">
+                <div class="nav-item">
+                    <div class="nav-icon">📚</div>
+                    Materias
+                </div>
+            </a>
+            <a href="/" style="text-decoration:none; color: inherit;">
+                <div class="nav-item">
+                    <div class="nav-icon">➕</div>
+                </div>
+            </a>
+            <a href="https://calendar.google.com/" target="_blank" style="text-decoration:none; color: inherit;">
+                <div class="nav-item">
+                    <div class="nav-icon">📆</div>
+                    Calendario
+                </div>
+            </a>
+            <div class="nav-item active">
+                <div class="nav-icon">👤</div>
+                Perfil
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtener datos de perfil del usuario (simulado)
+            loadUserProfile();
+        });
+
+        // Cargar datos del usuario (simulado)
+        function loadUserProfile() {
+            // Normalmente esto cargaría datos del servidor
+            // Aquí utilizamos datos estáticos para demostración
+            const user = {
+                name: "Usuario",
+                imageUrl: "https://i.pravatar.cc/300", // Imagen aleatoria de placeholder
+                joinDate: "Abril de 2025",
+                friends: 5,
+                stats: {
+                    streak: 5,
+                    completedTasks: 10,
+                    completionRate: 68,
+                    plansCreated: 5
+                }
+            };
+            
+            // Actualizar la interfaz con los datos del usuario
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('profileImage').src = user.imageUrl;
+            document.getElementById('userInfo').innerHTML = 
+                `Se unió en ${user.joinDate}<br>${user.friends} Amigos`;
+        }
+
+        // Función para ver más detalles de una medalla (pendiente de implementar)
+        function viewMedalDetails(medalId) {
+            // Se implementaría la lógica para mostrar detalles de la medalla
+            alert('Detalle de medalla: ' + medalId);
+        }
+    </script>
+</body>
+</html>

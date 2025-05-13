@@ -93,6 +93,18 @@ def planificar_estudio(data: EntradaPlan, background_tasks: BackgroundTasks):
                                            datetime.time(hour=0, minute=0))
     time_slots = list(range(336))  # 336 bloques de 30 min (7 días)
 
+    # === NUEVA LÓGICA: BLOQUEAR SLOTS ANTERIORES A LA HORA ACTUAL ===
+    now = datetime.datetime.now()
+    # Calcular cuántos bloques de 30 minutos han pasado desde base_datetime
+    if now > base_datetime:
+        delta_blocks = (now - base_datetime).total_seconds() // 1800
+        past_slots = set(range(min(336, int(delta_blocks + 1))))
+        print(f"Bloqueando {len(past_slots)} slots ya pasados (hasta {now.strftime('%Y-%m-%d %H:%M')})")
+    else:
+        past_slots = set()
+    
+    # === FIN DE NUEVA LÓGICA ===
+
     # Convertir deadlines a bloques
     for tarea in tareas:
         if not (0 <= tarea["peso"] <= 1):
@@ -108,11 +120,14 @@ def planificar_estudio(data: EntradaPlan, background_tasks: BackgroundTasks):
     # ===== DETECCIÓN DE SLOTS OCUPADOS (MEJORADO) =====
     busy_slots = set()
     
+    # Añadir slots pasados a los slots ocupados
+    busy_slots.update(past_slots)
+    
     # 1. Primera capa: Obtener eventos directamente desde Calendar API
     print("PASO 1: Obteniendo eventos desde Calendar API...")
     calendar_slots = get_busy_slots_from_calendar(base_datetime)
     busy_slots.update(calendar_slots)
-    print(f"Se detectaron {len(busy_slots)} bloques ocupados desde Calendar API")
+    print(f"Se detectaron {len(busy_slots)} bloques ocupados (incluye {len(past_slots)} slots pasados)")
     
     # 2. Segunda capa: Verificación específica y exhaustiva de todos los eventos
     print("PASO 2: Verificación exhaustiva de todos los eventos...")
@@ -410,11 +425,11 @@ def build_schedule_model(tasks, time_slots, busy_slots, alpha, beta, gamma1=1.0,
     # Conjunto actualizado de slots ocupados (para verificación doble)
     busy_slots_set = set(busy_slots)
     
-    # 1. Crear variables de decisión - SOLO para slots NO OCUPADOS
-    print(f"Creando modelo con {len(tasks)} tareas y {len(time_slots)} slots ({len(busy_slots_set)} ocupados)")
+    # 1. Crear variables de decisión - SOLO para slots NO OCUPADOS y NO PASADOS
+    print(f"Creando modelo con {len(tasks)} tareas y {len(time_slots)} slots ({len(busy_slots_set)} ocupados/pasados)")
     for i, tarea in enumerate(tasks):
         for t in time_slots:
-            # Solo crear variables para slots disponibles y antes del deadline
+            # Solo crear variables para slots disponibles, no pasados y antes del deadline
             if t <= tarea["deadline"] and t not in busy_slots_set:
                 x[i, t] = pulp.LpVariable(f"x_{i}_{t}", cat="Binary")
         # Variable de progreso para cada tarea
